@@ -1,9 +1,10 @@
 import dotenv from 'dotenv'
 dotenv.config()
 import express from 'express'
-import {DatabaseConnect} from './databse/dbConnect.js'
+import {DatabaseConnect} from './database/dbConnect.js'
 const app=express()
 const port=3333
+
 
 DatabaseConnect()
 
