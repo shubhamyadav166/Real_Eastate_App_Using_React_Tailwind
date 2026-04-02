@@ -8,8 +8,8 @@ if(!email||!username||!password){
     return res.status(401).json({message:"All fields are required"})
 }
 // becrypt using await itself
-const hashPassword = bcrypt.hashSync(password, 10);
-const newUser=await new User({email,username,password:hashPassword})
+const hashPassword = bcrypt.hash(password, 10);
+const newUser= new User({email,username,password:hashPassword})
 
 await newUser.save()
 
