@@ -1,20 +1,23 @@
 import User from '../model/user.model.js'
 import bcrypt from "bcrypt";
+import {asyncHandler} from '../utils/asyncHandler.js'
+import { ApiError } from '../utils/ApiError.js';
 
-const signup=async(req,res)=>{
+
+const signup=asyncHandler(async(req,res)=>{
 // console.log(req.body);
 const {email,username,password}=req.body
 if(!email||!username||!password){
-    return res.status(401).json({message:"All fields are required"})
+  throw new ApiError(400,"All fields are required...!!!!!!!!!!")
 }
 // becrypt using await itself
-const hashPassword = bcrypt.hash(password, 10);
+const hashPassword = await bcrypt.hash(password, 10);
 const newUser= new User({email,username,password:hashPassword})
 
 await newUser.save()
 
 res.status(200).json({message:"User Created Successfully",email})
 
-}
+})
 export {signup}
 
