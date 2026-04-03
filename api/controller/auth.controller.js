@@ -10,6 +10,13 @@ const {email,username,password}=req.body
 if(!email||!username||!password){
   throw new ApiError(400,"All fields are required...!!!!!!!!!!")
 }
+
+const existedUser=await User.findOne({
+  $or:[{email},{username}]
+})
+if(existedUser){
+  throw new ApiError(400,"User Already Exist Please Sign in")
+}
 // becrypt using await itself
 const hashPassword = await bcrypt.hash(password, 10);
 const newUser= new User({email,username,password:hashPassword})
