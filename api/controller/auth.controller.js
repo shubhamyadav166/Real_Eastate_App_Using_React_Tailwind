@@ -7,8 +7,11 @@ import { ApiError } from '../utils/ApiError.js';
 const signup=asyncHandler(async(req,res)=>{
 // console.log(req.body);
 const {email,username,password}=req.body
-if(!email||!username||!password){
-  throw new ApiError(400,"All fields are required...!!!!!!!!!!")
+// if(!email||!username||!password){
+//   throw new ApiError(400,"All fields are required...!!!!!!!!!!")
+// }
+if([username,email,password].some(field=>!field||field.trim()==="")){
+  throw new ApiError(400,"All Fields are required ")
 }
 
 const existedUser=await User.findOne({
@@ -23,7 +26,13 @@ const newUser= new User({email,username,password:hashPassword})
 
 await newUser.save()
 
-res.status(200).json({message:"User Created Successfully",email})
+const createdUser=User.findById(newUser._id).select("-password")
+
+res.status(200).json({
+  success:true,
+  message:"User Created Successfully",
+data:createdUser
+})
 
 })
 export {signup}
