@@ -2,7 +2,16 @@ import User from '../model/user.model.js'
 import bcrypt from "bcrypt";
 import {asyncHandler} from '../utils/asyncHandler.js'
 import { ApiError } from '../utils/ApiError.js';
+import jwt from "jsonwebtoken";
 
+const generateToken=(id)=>{
+const token = jwt.sign({ id:id},process.env.JWTSECRET,{expiresIn:"1d"});
+return token
+}
+let options={
+  httpOnly:true,
+  secure:true
+}
 
 const signup=asyncHandler(async(req,res)=>{
 // console.log(req.body);
@@ -54,29 +63,21 @@ const hashPassword =bcrypt.compareSync(password, existedUser.password);
 if(!hashPassword){
   throw new ApiError(401, "Wrong Credentials", false)
 }
+// Token creation 
 
-if(hashPassword){
- return res.status(200).json({message:"User Sign In successfully"})
-}
+const token=generateToken(existedUser._id)
 
-const newUser= new User({email,username,password:hashPassword})
-
- 
-const {name=username,Mail=email}=newUser._doc
-console.log(name,Mail);
-
-// const createdUser=User.findById(newUser._id).select("-password")
-
-res.status(200).json({
+const {password:pass,...rest}=existedUser._doc
+res.cookie("access_token", token,options)
+.status(200).json({
   success:true,
-  message:` User of this name: ${name} Created Successfully`,
-
+rest,
 })
 
 })
 
 
-export {signup,signIn}
+export {signup,signIn,generateToken}
 
 
 
