@@ -25,15 +25,58 @@ const hashPassword = await bcrypt.hash(password, 10);
 const newUser= new User({email,username,password:hashPassword})
 
 await newUser.save()
+ 
+const {name=username,Mail=email}=newUser._doc
+console.log(name,Mail);
 
-const createdUser=User.findById(newUser._id).select("-password")
+// const createdUser=User.findById(newUser._id).select("-password")
 
 res.status(200).json({
   success:true,
-  message:"User Created Successfully",
-data:createdUser
+  message:` User of this name: ${name} Created Successfully`,
+
 })
 
 })
-export {signup}
+
+
+// sign in function 
+const signIn=asyncHandler(async(req,res)=>{
+
+const {email,password}=req.body
+
+const existedUser=await User.findOne({email})
+
+console.log(existedUser);
+
+// becrypt compare using await itself
+const hashPassword =bcrypt.compareSync(password, existedUser.password);
+if(!hashPassword){
+  throw new ApiError(401, "Wrong Credentials", false)
+}
+
+if(hashPassword){
+ return res.status(200).json({message:"User Sign In successfully"})
+}
+
+const newUser= new User({email,username,password:hashPassword})
+
+ 
+const {name=username,Mail=email}=newUser._doc
+console.log(name,Mail);
+
+// const createdUser=User.findById(newUser._id).select("-password")
+
+res.status(200).json({
+  success:true,
+  message:` User of this name: ${name} Created Successfully`,
+
+})
+
+})
+
+
+export {signup,signIn}
+
+
 

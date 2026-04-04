@@ -1,12 +1,15 @@
 import { useState } from 'react'
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
+
 
 const SignUp = () => {
 const [error,setError]=useState('')
 const [loading,setLoading]=useState(false)
   const [data,setData]=useState({username:"",email:"",password:""})
+  let navigate=useNavigate()
 
   const handleChange=(e)=>{
+    
     console.log(data);
     
     setData({...data,[e.target.name]:e.target.value})
@@ -41,7 +44,8 @@ const [loading,setLoading]=useState(false)
       }
      
       setLoading(false)
-      
+      setError(null)
+      navigate('/sign-in')
     } catch (err) {
       console.log(err);
       setLoading(false)
@@ -55,9 +59,9 @@ const [loading,setLoading]=useState(false)
       <h1 className='font-semibold text-3xl my-7 text-center '>Sign Up</h1>
 
       <form onSubmit={handleSubmit} className='flex flex-col items-center gap-5 w-full px-5'> 
-        <input onChange={handleChange} value={data.username} name="username" type="text" placeholder='Username' className=' border  rounded p-2 w-full sm:w-1/4' />
-        <input onChange={handleChange} value={data.email} name="email" type="text" placeholder='Email' className=' border  rounded p-2 w-full sm:w-1/4' />
-        <input onChange={handleChange} value={data.password} name="password" type="text" placeholder='Password' className=' border  rounded p-2 w-full sm:w-1/4' />
+        <input onChange={handleChange} value={data.username} name="username" type="text" placeholder='Username' className=' border  rounded p-2 w-full sm:w-1/4' required />
+        <input onChange={handleChange} value={data.email} name="email" type="text" placeholder='Email' className=' border  rounded p-2 w-full sm:w-1/4' required/>
+        <input onChange={handleChange} value={data.password} name="password" type="text" placeholder='Password' className=' border  rounded p-2 w-full sm:w-1/4' required />
         <button disabled={loading} className='rounded p-2 w-full sm:w-1/4 bg-gray-600 text-xl text-white uppercase hover:opacity-95 disabled:opacity-80'>
         {loading?"Loading... ":"Sign Up"}</button>
       </form>
@@ -69,7 +73,7 @@ const [loading,setLoading]=useState(false)
         </Link>
         </div>
       </div>
-      <p className='text-red-500 text-xl'>{error}</p>
+      <div className='flex justify-center  p-2'><p className='text-red-500 text-xl w-full sm:w-1/4'>{error}</p></div>
     </div>
   )
 }
