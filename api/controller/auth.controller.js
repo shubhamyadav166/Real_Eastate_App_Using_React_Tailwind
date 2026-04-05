@@ -8,10 +8,7 @@ const generateToken=(id)=>{
 const token = jwt.sign({ id:id},process.env.JWTSECRET,{expiresIn:"1d"});
 return token
 }
-let options={
-  httpOnly:true,
-  secure:true
-}
+
 
 const signup=asyncHandler(async(req,res)=>{
 // console.log(req.body);
@@ -55,8 +52,9 @@ const signIn=asyncHandler(async(req,res)=>{
 const {email,password}=req.body
 
 const existedUser=await User.findOne({email})
-
-console.log(existedUser);
+if(!existedUser){
+  throw new ApiError(404,"User not found Please Sign Up")
+}
 
 // becrypt compare using await itself
 const hashPassword =bcrypt.compareSync(password, existedUser.password);
@@ -68,10 +66,19 @@ if(!hashPassword){
 const token=generateToken(existedUser._id)
 
 const {password:pass,...rest}=existedUser._doc
-res.cookie("access_token", token,options)
-.status(200).json({
+res.cookie("token", token,
+  {
+  httpOnly: true,
+  secure: false,       // false for localhost
+  sameSite: "strict",     // IMPORTANT
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+  path: "/",
+})
+.status(200)
+.json({
   success:true,
-rest,
+  message:"Login Successfully ",
+
 })
 
 })

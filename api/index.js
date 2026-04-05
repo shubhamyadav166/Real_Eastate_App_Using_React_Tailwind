@@ -4,11 +4,16 @@ import express from 'express'
 import {DatabaseConnect} from './database/dbConnect.js'
 import UserRouter from './router/user.route.js'
 import AuthRouter from './router/auth.route.js'
+import cors from 'cors'
 const app=express()
 
 const port=3333
 
 DatabaseConnect()
+app.use(cors({
+  origin: "http://localhost:5173/",
+  credentials: true
+}));
 app.use(express.json())
 app.use("/api/user",UserRouter)
 
